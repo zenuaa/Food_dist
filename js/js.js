@@ -49,30 +49,29 @@ function getLostTime(doomsDaySet) {
         hours = Math.floor(difference / (1000 * 60 * 60) % 24),
         min = Math.floor(difference / (1000 * 60) % 60),
         sec = Math.floor(difference / (1000) % 60);
-        return {
-            day: day,
-            hours: hours,
-            min: min,
-            sec: sec,
-            diff: difference
-        };
+    return {
+        day: day,
+        hours: hours,
+        min: min,
+        sec: sec,
+        diff: difference
+    };
 }
 
 function setLostTime() {
     const objLostTime = getLostTime(doomsDay),
-    timerBlock = document.querySelectorAll('.timer__block');
+        timerBlock = document.querySelectorAll('.timer__block');
     let arrLostTime = Object.values(objLostTime);
     if (objLostTime.diff <= 0) {
         clearInterval(upTime);
     } else {
         timerBlock.forEach((item, index) => {
 
-             let value = arrLostTime[index];
-             //console.log(value);
-             if(value < 10){
-                item.firstElementChild.textContent = '0' + value;  //добавляем нули если число мешьше 10
-             }
-            else {
+            let value = arrLostTime[index];
+            //console.log(value);
+            if (value < 10) {
+                item.firstElementChild.textContent = '0' + value; //добавляем нули если число мешьше 10
+            } else {
                 item.firstElementChild.textContent = value;
             }
         });
@@ -82,6 +81,43 @@ function setLostTime() {
 
 //end date
 
+
+// modal windows
+
+const modalTrigger = document.querySelectorAll('[data-modal]'),
+    modal = document.querySelector('.modal'),
+    closeModal = document.querySelector('[data-close]');
+
+modalTrigger.forEach(item => {
+    item.addEventListener('click', () => {
+        console.log('was a click on data-modal');
+        modal.classList.toggle('show');
+        document.body.style.overflow = 'hidden'; //блокирование прокрутки основного окна когда модальное окрыто
+    })
+})
+
+document.addEventListener('keydown', (e) => {
+    
+    if (e.key === 'Escape' && modal.classList.contains('show')) {
+        closeModalFrame()
+        console.log(`${e.key} was prased`);
+    }
+});
+
+function closeModalFrame() {
+    console.log('was a click on data-close');
+    modal.classList.toggle('show');
+    document.body.style.overflow = 'scroll';
+}
+
+closeModal.addEventListener('click', closeModalFrame)
+
+
+modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+        closeModalFrame();
+    }
+});
 
 console.timeEnd('time');
 // end DOMContentLoaded
