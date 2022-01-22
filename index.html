@@ -6,6 +6,12 @@
     <title>Food</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/my.css">
+<!-- сначала выполнится jQuery -->
+<script defer src="js/jquery-3.6.0.min.js"></script>
+<!-- после jQuery свой скрипт, зависящий от jQuery -->
+<script defer src="js/jquery.js"></script>
+<script defer src="js/js.js"></script>
+</head>
 </head>
 <body>
     <header class="header">
@@ -288,7 +294,7 @@
         </div>
     </footer>
 
-    <div class="modal">
+    <div class="modal hide">
         <div class="modal__dialog">
             <div class="modal__content">
                 <form action="#">
@@ -301,6 +307,6 @@
             </div>
         </div>
     </div>
-    <script src="js/js.js"></script>
+    
 </body>
 </html>

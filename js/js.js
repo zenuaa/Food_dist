@@ -91,33 +91,53 @@ const modalTrigger = document.querySelectorAll('[data-modal]'),
 modalTrigger.forEach(item => {
     item.addEventListener('click', () => {
         console.log('was a click on data-modal');
-        modal.classList.toggle('show');
+        openModalFrame();
+        removeShowModalEvent();
+        clearInterval(openModalonTime); // off запуск модалки по истечению 10 сек на стр
         document.body.style.overflow = 'hidden'; //блокирование прокрутки основного окна когда модальное окрыто
     })
 })
 
-document.addEventListener('keydown', (e) => {
-    
+document.addEventListener('keydown', (e) => { //закрывает модалку при нажатии Escape
+
     if (e.key === 'Escape' && modal.classList.contains('show')) {
-        closeModalFrame()
+        closeOpenModalFrame()
         console.log(`${e.key} was prased`);
     }
 });
 
-function closeModalFrame() {
-    console.log('was a click on data-close');
-    modal.classList.toggle('show');
+function openModalFrame() { // открытие модалки
+    const m = modal.classList;
+    m.remove('hide');
+    m.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeModalFrame() { // закрытие модалки
+    const m = modal.classList;
+    m.remove('show');
+    m.add('hide');
     document.body.style.overflow = 'scroll';
 }
 
-closeModal.addEventListener('click', closeModalFrame)
+
+closeModal.addEventListener('click', closeModalFrame) //при клике на крестик закрываем модалку
 
 
-modal.addEventListener('click', (e) => {
+modal.addEventListener('click', (e) => { // клик за пределами модалки закрывает модалку
     if (e.target === modal) {
         closeModalFrame();
     }
 });
+
+
+window.addEventListener('scroll', showModal);
+
+
+const openModalonTime = setTimeout(() => { //запуск модалки по истечению 10 сек на стр
+    openModalFrame();
+    removeShowModalEvent();
+}, 3000);
 
 console.timeEnd('time');
 // end DOMContentLoaded
