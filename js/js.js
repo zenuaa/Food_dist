@@ -92,16 +92,16 @@ modalTrigger.forEach(item => {
     item.addEventListener('click', () => {
         console.log('was a click on data-modal');
         openModalFrame();
-        removeShowModalEvent();
+        // removeShowModalEvent();
         clearInterval(openModalonTime); // off запуск модалки по истечению 10 сек на стр
         document.body.style.overflow = 'hidden'; //блокирование прокрутки основного окна когда модальное окрыто
-    })
-})
+    });
+});
 
 document.addEventListener('keydown', (e) => { //закрывает модалку при нажатии Escape
 
     if (e.key === 'Escape' && modal.classList.contains('show')) {
-        closeOpenModalFrame()
+        // closeOpenModalFrame()
         console.log(`${e.key} was prased`);
     }
 });
@@ -121,7 +121,7 @@ function closeModalFrame() { // закрытие модалки
 }
 
 
-closeModal.addEventListener('click', closeModalFrame) //при клике на крестик закрываем модалку
+closeModal.addEventListener('click', closeModalFrame); //при клике на крестик закрываем модалку
 
 
 modal.addEventListener('click', (e) => { // клик за пределами модалки закрывает модалку
@@ -131,13 +131,63 @@ modal.addEventListener('click', (e) => { // клик за пределами м�
 });
 
 
-window.addEventListener('scroll', showModal);
+// window.addEventListener('scroll', showModal);
 
 
 const openModalonTime = setTimeout(() => { //запуск модалки по истечению 10 сек на стр
     openModalFrame();
-    removeShowModalEvent();
+    // removeShowModalEvent();
 }, 3000);
+
+const forms = document.querySelectorAll('form');
+const infoLoad = {
+    loading: 'Инфа полетела на сервер..',
+    success: 'Заявка оставленна..',
+    fail: 'An arror has ocurated..'
+};
+const divInfoLoad = document.createElement('div');
+divInfoLoad.style.margin = '10px';
+
+forms.forEach(item => {
+    postData(item);
+});
+
+function postData(form) {
+    form.addEventListener('submit', (e) => {
+        divInfoLoad.textContent = infoLoad.loading;
+        form.append(divInfoLoad);
+        e.preventDefault();
+        const formData = new FormData(form);
+        const request = new XMLHttpRequest();
+        request.open('POST', 'server.php');
+        request.setRequestHeader('Content-type', 'applicatoin/json');
+        const cloneFormData = {};
+        formData.forEach((item, index ) => {
+             cloneFormData[index] = item;
+        });
+        // console.log(cloneFormData );
+        const json = JSON.stringify(cloneFormData);
+
+        request.send(json);
+        request.addEventListener('load', () => {
+            if (request.status === 200) {                
+                divInfoLoad.textContent = infoLoad.success;
+                // const inf = JSON.parse(request.response);   
+                console.log(request.response);
+                setTimeout(() => {
+                    form.reset();
+                    divInfoLoad.remove();
+                    closeModalFrame();
+                }, 2000);
+            } else {
+                divInfoLoad.textContent = infoLoad.loading;
+            }
+        });
+    });
+}
+
+
+
 
 console.timeEnd('time');
 // end DOMContentLoaded
