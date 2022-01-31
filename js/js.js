@@ -92,7 +92,7 @@ modalTrigger.forEach(item => {
     item.addEventListener('click', () => {
         console.log('was a click on data-modal');
         openModalFrame();
-        // removeShowModalEvent();
+        removeShowModalEvent();
         clearInterval(openModalonTime); // off запуск модалки по истечению 10 сек на стр
         document.body.style.overflow = 'hidden'; //блокирование прокрутки основного окна когда модальное окрыто
     });
@@ -101,7 +101,7 @@ modalTrigger.forEach(item => {
 document.addEventListener('keydown', (e) => { //закрывает модалку при нажатии Escape
 
     if (e.key === 'Escape' && modal.classList.contains('show')) {
-        // closeOpenModalFrame()
+        closeModalFrame();
         console.log(`${e.key} was prased`);
     }
 });
@@ -125,67 +125,113 @@ closeModal.addEventListener('click', closeModalFrame); //при клике на 
 
 
 modal.addEventListener('click', (e) => { // клик за пределами модалки закрывает модалку
-    if (e.target === modal) {
+    if (e.target === modal || e.target.classList.contains('modal__close')) {
         closeModalFrame();
     }
 });
 
 
-// window.addEventListener('scroll', showModal);
+window.addEventListener('scroll', showModal);
 
 
 const openModalonTime = setTimeout(() => { //запуск модалки по истечению 10 сек на стр
     openModalFrame();
-    // removeShowModalEvent();
-}, 3000);
+    removeShowModalEvent();
+}, 50000);
+
+function showModal() {
+    if ($(window).scrollTop() + $(window).height() + 0.1 >= $(document).height()) {
+        console.log('ура! конец страницы!');
+        openModalFrame();
+        removeShowModalEvent();
+        clearTimeout(openModalonTime);
+    }
+}
+
+function removeShowModalEvent() {
+    window.removeEventListener('scroll', showModal);
+}
 
 const forms = document.querySelectorAll('form');
 const infoLoad = {
-    loading: 'Инфа полетела на сервер..',
-    success: 'Заявка оставленна..',
+    loading: 'img/form/spinner.svg',
+    success: "Thank's, we'll call you..",
     fail: 'An arror has ocurated..'
 };
-const divInfoLoad = document.createElement('div');
-divInfoLoad.style.margin = '10px';
 
-forms.forEach(item => {
+forms.forEach(item => { //каждой форме назначаем обработчик события по отправке данных
     postData(item);
 });
 
 function postData(form) {
     form.addEventListener('submit', (e) => {
-        divInfoLoad.textContent = infoLoad.loading;
-        form.append(divInfoLoad);
         e.preventDefault();
-        const formData = new FormData(form);
-        const request = new XMLHttpRequest();
-        request.open('POST', 'server.php');
-        request.setRequestHeader('Content-type', 'applicatoin/json');
-        const cloneFormData = {};
-        formData.forEach((item, index ) => {
-             cloneFormData[index] = item;
+        const spin = document.createElement('img');
+        spin.src = infoLoad.loading;
+        spin.style.cssText = `
+        display: block;
+        margin: 0 auto;`;
+        // form.append(spin);
+        form.insertAdjacentElement('afterend', spin);
+        const formData = new FormData(form); //вытягиваем данные из формы
+        const request = new XMLHttpRequest(); // создаем новый экземпляр обьекта
+        request.open('POST', 'server.php'); //создаем метод POST
+        request.setRequestHeader('Content-type', 'applicatoin/json'); // устанавливаем HTTP заголовок
+        const cloneFormData = {}; // новый обьект для JSON
+        formData.forEach((item, index) => {
+            cloneFormData[index] = item;
         });
         // console.log(cloneFormData );
-        const json = JSON.stringify(cloneFormData);
+        const json = JSON.stringify(cloneFormData); // перегоняем данные в формат JSON
 
-        request.send(json);
-        request.addEventListener('load', () => {
-            if (request.status === 200) {                
-                divInfoLoad.textContent = infoLoad.success;
+        request.send(json); // отправляем запрос с данными в формате json
+        request.addEventListener('load', () => { //по окончанию отправки
+            if (request.status === 200) { // проверка на успешность отправки 
                 // const inf = JSON.parse(request.response);   
-                console.log(request.response);
+                console.log(request.response); // вывод данных POST
+
+                showThanksModal(infoLoad.success);
                 setTimeout(() => {
                     form.reset();
-                    divInfoLoad.remove();
-                    closeModalFrame();
+                    spin.remove();
+                    // closeModalFrame();
                 }, 2000);
             } else {
-                divInfoLoad.textContent = infoLoad.loading;
+                showThanksModal(infoLoad.fail); // вывод если неудачная отправка respose != 200
             }
         });
     });
 }
 
+function showThanksModal(massage) {
+    const modalFirstChild = document.querySelector('.modal__dialog'); //
+    modalFirstChild.classList.remove('show');
+    modalFirstChild.classList.add('hide'); //прячем первую модалку
+    console.log(modalFirstChild);
+
+    openModalFrame();    
+    const thanksModal = document.createElement('div'); // создаем новый блок с таким же стилем как и удаленый
+    thanksModal.classList.add('modal__dialog'); // и забиваем туда спасибо наше
+    thanksModal.innerHTML = `
+    <div class="modal__content">
+        <div data-close class="modal__close">&times;</div>
+        <div class="modal__title">${massage}</div>
+    </div>
+    `;
+
+    modal.append(thanksModal); //вставляем блок спасибо
+
+
+
+    setTimeout(() => { // после событи submit 
+        thanksModal.remove(); //удаляем спасибо
+        modalFirstChild.classList.remove('hide');
+        modalFirstChild.classList.add('show');
+        closeModalFrame();
+    }, 2000);
+
+
+}
 
 
 

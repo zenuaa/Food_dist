@@ -692,7 +692,7 @@ a {
 .modal__title {
     text-align: center;
     font-size: 22px;
-    text-transform: uppercase
+    /* text-transform: uppercase */
 }
 
 .modal__input {
