@@ -174,32 +174,48 @@ function postData(form) {
         // form.append(spin);
         form.insertAdjacentElement('afterend', spin);
         const formData = new FormData(form); //вытягиваем данные из формы
-        const request = new XMLHttpRequest(); // создаем новый экземпляр обьекта
-        request.open('POST', 'server.php'); //создаем метод POST
-        request.setRequestHeader('Content-type', 'applicatoin/json'); // устанавливаем HTTP заголовок
+        // const request = new XMLHttpRequest(); // создаем новый экземпляр обьекта
         const cloneFormData = {}; // новый обьект для JSON
-        formData.forEach((item, index) => {
-            cloneFormData[index] = item;
-        });
-        // console.log(cloneFormData );
-        const json = JSON.stringify(cloneFormData); // перегоняем данные в формат JSON
-
-        request.send(json); // отправляем запрос с данными в формате json
-        request.addEventListener('load', () => { //по окончанию отправки
-            if (request.status === 200) { // проверка на успешность отправки 
-                // const inf = JSON.parse(request.response);   
-                console.log(request.response); // вывод данных POST
-
+                formData.forEach((item, index) => {
+                    cloneFormData[index] = item;
+                });
+        fetch('server.php', {
+                method: "POST",
+                headers: {
+                    'Content-type': 'applicatoin/json'
+                },
+                body: JSON.stringify(cloneFormData),// перегоняем данные в формат JSON
+            }).then(data => data.text())
+            .then(data => {
+                console.log(data);
                 showThanksModal(infoLoad.success);
                 setTimeout(() => {
-                    form.reset();
                     spin.remove();
-                    // closeModalFrame();
-                }, 2000);
-            } else {
-                showThanksModal(infoLoad.fail); // вывод если неудачная отправка respose != 200
-            }
-        });
+                });
+                // request.open('POST', 'server.php'); //создаем метод POST
+                // request.setRequestHeader('Content-type', 'applicatoin/json'); // устанавливаем HTTP заголовок
+                
+                // request.send(json); // отправляем запрос с данными в формате json
+                // request.addEventListener('load', () => { //по окончанию отправки
+                //     if (request.status === 200) { // проверка на успешность отправки 
+                //         // const inf = JSON.parse(request.response);   
+                //         console.log(request.response); // вывод данных POST
+
+                //         showThanksModal(infoLoad.success);
+                //         setTimeout(() => {
+                //             form.reset();
+                //             spin.remove();
+                //             // closeModalFrame();
+                //         }, 2000);
+                //     } else {
+                //         showThanksModal(infoLoad.fail); // вывод если неудачная отправка respose != 200
+                //     }
+                // });
+            }).catch(() => {
+                showThanksModal(infoLoad.fail);
+            }).finally(() => {
+                form.reset();
+            });
     });
 }
 
@@ -207,9 +223,9 @@ function showThanksModal(massage) {
     const modalFirstChild = document.querySelector('.modal__dialog'); //
     modalFirstChild.classList.remove('show');
     modalFirstChild.classList.add('hide'); //прячем первую модалку
-    console.log(modalFirstChild);
+    // console.log(modalFirstChild);
 
-    openModalFrame();    
+    openModalFrame();
     const thanksModal = document.createElement('div'); // создаем новый блок с таким же стилем как и удаленый
     thanksModal.classList.add('modal__dialog'); // и забиваем туда спасибо наше
     thanksModal.innerHTML = `
