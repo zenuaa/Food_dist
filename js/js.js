@@ -249,6 +249,16 @@ function showThanksModal(massage) {
 
 }
 
+fetch('db.json')
+.then(response=>{
+    console.log(response);
+    
+    return (response.json());    
+})
+.then(x=> {
+    console.log(x);
+    
+});
 
 
 console.timeEnd('time');
