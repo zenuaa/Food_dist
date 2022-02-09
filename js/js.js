@@ -81,6 +81,67 @@ function setLostTime() {
 
 //end date
 
+// классы для корточек
+
+class MenuCard{// создаем класс с карточками
+    constructor(src, alt, title, descr, price, parentSelector){
+         this.src = src;
+         this.alt = alt;
+         this.title = title;
+         this.descr = descr;
+         this.price = price;
+         this.transfer = 27;
+         this.changeToUAH();// запуск метода по переводу при создании экземпляра класса
+         this.parent = document.querySelector(parentSelector);// выборка родителя для append
+    }
+    changeToUAH(){ // метод переводит баксы в гривны
+        this.price = this.price * this.transfer;
+    }
+    render(){// создает и вставляет новую карточку в родителя this.parent
+        const element = document.createElement('div');
+        element.innerHTML= `
+        <div class="menu__item">
+                    <img src=${this.src} alt=${this.alt}>
+                    <h3 class="menu__item-subtitle">${this.title}</h3>
+                    <div class="menu__item-descr">${this.descr}</div>
+                    <div class="menu__item-divider"></div>
+                    <div class="menu__item-price">
+                        <div class="menu__item-cost">Цена:</div>
+                        <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
+                    </div>
+        </div>
+        `;
+        this.parent.append(element);
+    }
+}
+
+new MenuCard(
+    'img/tabs/vegy.jpg',
+    "vegy",
+    'Меню "Фитнес"',
+    'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
+    9,
+    '.menu__field .container'
+).render();
+
+new MenuCard(
+    'img/tabs/elite.jpg',
+    'elite',
+    'Меню “Премиум”',
+    'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
+    20,
+    '.menu__field .container'
+).render();
+
+new MenuCard(
+    'img/tabs/post.jpg',
+    'Меню "Постное"',
+    'post',
+    'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
+    16,
+    '.menu__field .container'
+).render();
+
 
 // modal windows
 
@@ -176,15 +237,15 @@ function postData(form) {
         const formData = new FormData(form); //вытягиваем данные из формы
         // const request = new XMLHttpRequest(); // создаем новый экземпляр обьекта
         const cloneFormData = {}; // новый обьект для JSON
-                formData.forEach((item, index) => {
-                    cloneFormData[index] = item;
-                });
+        formData.forEach((item, index) => {
+            cloneFormData[index] = item;
+        });
         fetch('server.php', {
                 method: "POST",
                 headers: {
                     'Content-type': 'applicatoin/json'
                 },
-                body: JSON.stringify(cloneFormData),// перегоняем данные в формат JSON
+                body: JSON.stringify(cloneFormData), // перегоняем данные в формат JSON
             }).then(data => data.text())
             .then(data => {
                 console.log(data);
@@ -194,7 +255,7 @@ function postData(form) {
                 });
                 // request.open('POST', 'server.php'); //создаем метод POST
                 // request.setRequestHeader('Content-type', 'applicatoin/json'); // устанавливаем HTTP заголовок
-                
+
                 // request.send(json); // отправляем запрос с данными в формате json
                 // request.addEventListener('load', () => { //по окончанию отправки
                 //     if (request.status === 200) { // проверка на успешность отправки 
@@ -249,16 +310,36 @@ function showThanksModal(massage) {
 
 }
 
-fetch('db.json')
-.then(response=>{
-    console.log(response);
-    
-    return (response.json());    
-})
-.then(x=> {
-    console.log(x);
-    
-});
+// fetch('db.json')
+// .then(response=>{
+//     console.log(response);
+
+//         return (response.json());
+// })
+// .then(x=> {
+//     console.log(x);
+
+
+// });
+
+async function isServiceReady(url) {
+    let response = await fetch(url);
+    let body = await response.json();
+    return body;
+}
+async function arrBodys() {
+    let arr;
+    arr = await Promise.all([
+        isServiceReady('db.json').then(body => db.push(body) ),
+        isServiceReady('my_db.json').then(body => db.push(body))
+    ]);
+    return arr;
+}
+let db= [];
+arrBodys();
+console.warn(db);
+
+
 
 
 console.timeEnd('time');
