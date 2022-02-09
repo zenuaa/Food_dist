@@ -83,23 +83,23 @@ function setLostTime() {
 
 // классы для корточек
 
-class MenuCard{// создаем класс с карточками
-    constructor(src, alt, title, descr, price, parentSelector){
-         this.src = src;
-         this.alt = alt;
-         this.title = title;
-         this.descr = descr;
-         this.price = price;
-         this.transfer = 27;
-         this.changeToUAH();// запуск метода по переводу при создании экземпляра класса
-         this.parent = document.querySelector(parentSelector);// выборка родителя для append
+class MenuCard { // создаем класс с карточками
+    constructor(src, alt, title, descr, price, parentSelector) {
+        this.src = src;
+        this.alt = alt;
+        this.title = title;
+        this.descr = descr;
+        this.price = price;
+        this.transfer = 27;
+        this.changeToUAH(); // запуск метода по переводу при создании экземпляра класса
+        this.parent = document.querySelector(parentSelector); // выборка родителя для append
     }
-    changeToUAH(){ // метод переводит баксы в гривны
+    changeToUAH() { // метод переводит баксы в гривны
         this.price = this.price * this.transfer;
     }
-    render(){// создает и вставляет новую карточку в родителя this.parent
+    render() { // создает и вставляет новую карточку в родителя this.parent
         const element = document.createElement('div');
-        element.innerHTML= `
+        element.innerHTML = `
         <div class="menu__item">
                     <img src=${this.src} alt=${this.alt}>
                     <h3 class="menu__item-subtitle">${this.title}</h3>
@@ -114,6 +114,25 @@ class MenuCard{// создаем класс с карточками
         this.parent.append(element);
     }
 }
+
+const getResourse = async (url)=>{
+    const response = await fetch(url);
+    if (!response.ok) {
+        throw new Error(`Could not fetch() ${url}, because response.status: ${response.status}`);
+    }
+    return await response.json();
+};
+
+// getResourse('http://localhost:3000/menu')
+// .then(data=> {
+// console.log(data);
+// data.array.forEach(item => {
+//     new MenuCard(item.img).render();
+// });
+
+// });
+
+
 
 new MenuCard(
     'img/tabs/vegy.jpg',
@@ -221,10 +240,21 @@ const infoLoad = {
 };
 
 forms.forEach(item => { //каждой форме назначаем обработчик события по отправке данных
-    postData(item);
+    bindPostData(item);
 });
 
-function postData(form) {
+const postData = async (url, data) => {
+    const res = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-type': 'application/json'
+        },
+        body: data
+    });
+    return await res.json();
+};
+
+function bindPostData(form) {
     form.addEventListener('submit', (e) => {
         e.preventDefault();
         const spin = document.createElement('img');
@@ -232,46 +262,15 @@ function postData(form) {
         spin.style.cssText = `
         display: block;
         margin: 0 auto;`;
-        // form.append(spin);
         form.insertAdjacentElement('afterend', spin);
         const formData = new FormData(form); //вытягиваем данные из формы
-        // const request = new XMLHttpRequest(); // создаем новый экземпляр обьекта
-        const cloneFormData = {}; // новый обьект для JSON
-        formData.forEach((item, index) => {
-            cloneFormData[index] = item;
-        });
-        fetch('server.php', {
-                method: "POST",
-                headers: {
-                    'Content-type': 'applicatoin/json'
-                },
-                body: JSON.stringify(cloneFormData), // перегоняем данные в формат JSON
-            }).then(data => data.text())
+        const cloneFormData = JSON.stringify(Object.fromEntries(formData.entries())); // переделываем "страный" обьект полученный от FormData
+        // в JSON обьект методом stringify
+        postData('http://localhost:3000/requests', cloneFormData)
             .then(data => {
-                console.log(data);
+                console.log('вывод post обьекта разобраного .json()',data);
                 showThanksModal(infoLoad.success);
-                setTimeout(() => {
                     spin.remove();
-                });
-                // request.open('POST', 'server.php'); //создаем метод POST
-                // request.setRequestHeader('Content-type', 'applicatoin/json'); // устанавливаем HTTP заголовок
-
-                // request.send(json); // отправляем запрос с данными в формате json
-                // request.addEventListener('load', () => { //по окончанию отправки
-                //     if (request.status === 200) { // проверка на успешность отправки 
-                //         // const inf = JSON.parse(request.response);   
-                //         console.log(request.response); // вывод данных POST
-
-                //         showThanksModal(infoLoad.success);
-                //         setTimeout(() => {
-                //             form.reset();
-                //             spin.remove();
-                //             // closeModalFrame();
-                //         }, 2000);
-                //     } else {
-                //         showThanksModal(infoLoad.fail); // вывод если неудачная отправка respose != 200
-                //     }
-                // });
             }).catch(() => {
                 showThanksModal(infoLoad.fail);
             }).finally(() => {
@@ -322,24 +321,22 @@ function showThanksModal(massage) {
 
 // });
 
-async function isServiceReady(url) {
-    let response = await fetch(url);
-    let body = await response.json();
-    return body;
-}
-async function arrBodys() {
-    let arr;
-    arr = await Promise.all([
-        isServiceReady('db.json').then(body => db.push(body) ),
-        isServiceReady('my_db.json').then(body => db.push(body))
-    ]);
-    return arr;
-}
-let db= [];
-arrBodys();
-console.warn(db);
-
-
+// async function isServiceReady(url) {
+//     let response = await fetch(url);
+//     let body = await response.json();
+//     return body;
+// }
+// async function arrBodys() {
+//     let arr;
+//     arr = await Promise.all([
+//         isServiceReady('db.json').then(body => db.push(body) ),
+//         isServiceReady('my_db.json').then(body => db.push(body))
+//     ]);
+//     return arr;
+// }
+// let db= [];
+// arrBodys();
+// console.warn(db);
 
 
 console.timeEnd('time');
