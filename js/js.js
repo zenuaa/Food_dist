@@ -123,44 +123,14 @@ const getResourse = async (url)=>{
     return await response.json();
 };
 
-// getResourse('http://localhost:3000/menu')
-// .then(data=> {
-// console.log(data);
-// data.array.forEach(item => {
-//     new MenuCard(item.img).render();
-// });
+getResourse('http://localhost:3000/menu')
+.then(data=> {
+console.log(data);
+data.forEach(({img, altimg, title, descr, price})=> {
+    new MenuCard(img, altimg, title, descr, price, '.menu__field .container').render();
+});
 
-// });
-
-
-
-new MenuCard(
-    'img/tabs/vegy.jpg',
-    "vegy",
-    'Меню "Фитнес"',
-    'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!',
-    9,
-    '.menu__field .container'
-).render();
-
-new MenuCard(
-    'img/tabs/elite.jpg',
-    'elite',
-    'Меню “Премиум”',
-    'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-    20,
-    '.menu__field .container'
-).render();
-
-new MenuCard(
-    'img/tabs/post.jpg',
-    'Меню "Постное"',
-    'post',
-    'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-    16,
-    '.menu__field .container'
-).render();
-
+});
 
 // modal windows
 
@@ -337,6 +307,9 @@ function showThanksModal(massage) {
 // let db= [];
 // arrBodys();
 // console.warn(db);
+
+
+
 
 
 console.timeEnd('time');
