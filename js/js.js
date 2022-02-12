@@ -123,14 +123,33 @@ const getResourse = async (url)=>{
     return await response.json();
 };
 
-getResourse('http://localhost:3000/menu')
-.then(data=> {
-console.log(data);
-data.forEach(({img, altimg, title, descr, price})=> {
-    new MenuCard(img, altimg, title, descr, price, '.menu__field .container').render();
-});
+            // getResourse('http://localhost:3000/menu')
+            // .then(data=> {
+            // // console.log(data);
+            // data.forEach(({img, altimg, title, descr, price})=> {
+            //     new MenuCard(img, altimg, title, descr, price, '.menu__field .container').render();
+            // });
 
-});
+            // });
+
+axios.get('http://localhost:3000/menu')
+.then(data=> {
+    console.log(data);
+    data.data.forEach(({img, altimg, title, descr, price})=> {
+        new MenuCard(img, altimg, title, descr, price, '.menu__field .container').render();
+    });
+    
+    });
+    axios.post('http://localhost:3000/requests', {
+        firstName: 'Zenua',
+        lastName: 'Bartash'
+      })
+      .then(function (response) {
+        console.log(response);
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
 
 // modal windows
 
@@ -307,10 +326,6 @@ function showThanksModal(massage) {
 // let db= [];
 // arrBodys();
 // console.warn(db);
-
-
-
-
 
 console.timeEnd('time');
 // end DOMContentLoaded

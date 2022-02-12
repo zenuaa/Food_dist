@@ -1,5 +1,16 @@
 {
-  "hello": [],
+  "hello": [
+    {
+      "planet": "Earth",
+      "plase": "Chernigov",
+      "myHome": true
+    },
+    {
+      "planet": "Moon",
+      "plase": "Lake",
+      "myHome": false
+    }
+  ],
   "menu": [
     {
       "img": "img/tabs/vegy.jpg",
@@ -53,6 +64,11 @@
       "name": "zenua",
       "phone": "0939198508",
       "id": 6
+    },
+    {
+      "firstName": "Zenua",
+      "lastName": "Bartash",
+      "id": 7
     }
   ]
 }
