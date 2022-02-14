@@ -299,9 +299,9 @@ function showThanksModal(massage) {
 
 const slideCollection = document.querySelectorAll('.offer__slide'); //html коллекция всех слайдов
 const chageSlideButton = document.querySelectorAll('.offer__slider-prev , .offer__slider-next'); // кнопки вперед и назад
-let idSlides = document.querySelector('#current'); // отображение текущего номера слайда
+let posId = document.querySelector('#current'); // отображение текущего номера слайда
 const curentTotal = document.querySelector('#total');// отображение общего кол-ва слайдов
-let idSlide = 1; //отображаемый счетчик текущего слайда
+let idSlide = 0; //отображаемый счетчик текущего слайда совпадающий с индексом из html коллекции всех слайдов
 
 curentTotal.textContent = slideCollection.length;
 
@@ -313,45 +313,45 @@ chageSlideButton[1].addEventListener('click', () => {
 });
 
 function addPref0() { // добавление или недобавление 0 перед отображаемой позицией
-    if (idSlide < 10) {
-        idSlides.textContent = `0${idSlide}`;
+    if (idSlide < 9) {
+        posId.textContent = `0${idSlide + 1}`;
     } else {
-        idSlides.textContent = idSlide;
+        posId.textContent = idSlide +1;
     }
 }
 
-
-
+function hideCurrentSlide() { // функция по скрытию текущего слайда
+    slideCollection[idSlide].classList.toggle('hide');
+}
 
 
 function showSlidePrev() { // описание работы кнопки назад
 
-    if (idSlide === 1) { //если находимся на 1м слайде
-        slideCollection[idSlide - 1].classList.toggle('hide'); //скрываем текущий слайд
+    if (idSlide === 0) { //если находимся на 1м слайде
+        hideCurrentSlide(); //скрываем текущий слайд
         slideCollection[slideCollection.length - 1].classList.toggle('hide'); // отображаем послейдний слайд из колекции
-        idSlide = slideCollection.length; //меняем позтцию на индекс посл слайда
+        idSlide = slideCollection.length -1; //меняем позтцию на индекс посл слайда
         addPref0();
 
     } else {
-        slideCollection[idSlide - 1].classList.toggle('hide'); //скрываем текущий слайд
+        hideCurrentSlide(); //скрываем текущий слайд
         idSlide--; // уменьшаем позицию слайда
-        slideCollection[idSlide - 1].classList.toggle('hide'); //оттображаем предыдущий слайд по уменьшеной позиции
+        slideCollection[idSlide].classList.toggle('hide'); //оттображаем предыдущий слайд по уменьшеной позиции
         addPref0();
     }
 }
 
 
-
 function showSlideNext() { // описание работы кнопки вперед
-    if (idSlide < slideCollection.length) { //пока слайды не дошли до конца
-        slideCollection[idSlide - 1].classList.toggle('hide'); //скрываем текущий слайд
-        slideCollection[idSlide].classList.toggle('hide'); //отображаем следующий из колекции
+    if (idSlide < slideCollection.length - 1) { //пока слайды не дошли до конца
+        hideCurrentSlide(); //скрываем текущий слайд
+        slideCollection[idSlide +1 ].classList.toggle('hide'); //отображаем следующий из колекции
         idSlide++;
         addPref0();
     } else { //клик на последнем слайде
-        idSlide = 1;
+        idSlide = 0;
         slideCollection[slideCollection.length - 1].classList.toggle('hide'); //скрываем текущий слайд
-        slideCollection[idSlide - 1].classList.toggle('hide'); //отображаем 0 слайд из колекции
+        slideCollection[idSlide].classList.toggle('hide'); //отображаем 0 слайд из колекции
         addPref0();
     }
 }
