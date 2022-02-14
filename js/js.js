@@ -115,7 +115,7 @@ class MenuCard { // создаем класс с карточками
     }
 }
 
-const getResourse = async (url)=>{
+const getResourse = async (url) => {
     const response = await fetch(url);
     if (!response.ok) {
         throw new Error(`Could not fetch() ${url}, because response.status: ${response.status}`);
@@ -123,33 +123,30 @@ const getResourse = async (url)=>{
     return await response.json();
 };
 
-            // getResourse('http://localhost:3000/menu')
-            // .then(data=> {
-            // // console.log(data);
-            // data.forEach(({img, altimg, title, descr, price})=> {
-            //     new MenuCard(img, altimg, title, descr, price, '.menu__field .container').render();
-            // });
+// getResourse('http://localhost:3000/menu')
+// .then(data=> {
+// // console.log(data);
+// data.forEach(({img, altimg, title, descr, price})=> {
+//     new MenuCard(img, altimg, title, descr, price, '.menu__field .container').render();
+// });
 
-            // });
+// });
 
 axios.get('http://localhost:3000/menu')
-.then(data=> {
-    console.log(data);
-    data.data.forEach(({img, altimg, title, descr, price})=> {
-        new MenuCard(img, altimg, title, descr, price, '.menu__field .container').render();
+    .then(data => {
+        // console.log(data);
+        data.data.forEach(({
+            img,
+            altimg,
+            title,
+            descr,
+            price
+        }) => {
+            new MenuCard(img, altimg, title, descr, price, '.menu__field .container').render();
+        });
+
     });
-    
-    });
-    axios.post('http://localhost:3000/requests', {
-        firstName: 'Zenua',
-        lastName: 'Bartash'
-      })
-      .then(function (response) {
-        console.log(response);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+
 
 // modal windows
 
@@ -257,9 +254,9 @@ function bindPostData(form) {
         // в JSON обьект методом stringify
         postData('http://localhost:3000/requests', cloneFormData)
             .then(data => {
-                console.log('вывод post обьекта разобраного .json()',data);
+                console.log('вывод post обьекта разобраного .json()', data);
                 showThanksModal(infoLoad.success);
-                    spin.remove();
+                spin.remove();
             }).catch(() => {
                 showThanksModal(infoLoad.fail);
             }).finally(() => {
@@ -297,6 +294,68 @@ function showThanksModal(massage) {
 
 
 }
+
+// делаем слайдер из картинок
+
+const slideCollection = document.querySelectorAll('.offer__slide'); //html коллекция всех слайдов
+const chageSlideButton = document.querySelectorAll('.offer__slider-prev , .offer__slider-next'); // кнопки вперед и назад
+let idSlides = document.querySelector('#current'); // отображение текущего номера слайда
+const curentTotal = document.querySelector('#total');// отображение общего кол-ва слайдов
+let idSlide = 1; //отображаемый счетчик текущего слайда
+
+curentTotal.textContent = slideCollection.length;
+
+chageSlideButton[0].addEventListener('click', () => {
+    showSlidePrev();
+});
+chageSlideButton[1].addEventListener('click', () => {
+    showSlideNext();
+});
+
+function addPref0() { // добавление или недобавление 0 перед отображаемой позицией
+    if (idSlide < 10) {
+        idSlides.textContent = `0${idSlide}`;
+    } else {
+        idSlides.textContent = idSlide;
+    }
+}
+
+
+
+
+
+function showSlidePrev() { // описание работы кнопки назад
+
+    if (idSlide === 1) { //если находимся на 1м слайде
+        slideCollection[idSlide - 1].classList.toggle('hide'); //скрываем текущий слайд
+        slideCollection[slideCollection.length - 1].classList.toggle('hide'); // отображаем послейдний слайд из колекции
+        idSlide = slideCollection.length; //меняем позтцию на индекс посл слайда
+        addPref0();
+
+    } else {
+        slideCollection[idSlide - 1].classList.toggle('hide'); //скрываем текущий слайд
+        idSlide--; // уменьшаем позицию слайда
+        slideCollection[idSlide - 1].classList.toggle('hide'); //оттображаем предыдущий слайд по уменьшеной позиции
+        addPref0();
+    }
+}
+
+
+
+function showSlideNext() { // описание работы кнопки вперед
+    if (idSlide < slideCollection.length) { //пока слайды не дошли до конца
+        slideCollection[idSlide - 1].classList.toggle('hide'); //скрываем текущий слайд
+        slideCollection[idSlide].classList.toggle('hide'); //отображаем следующий из колекции
+        idSlide++;
+        addPref0();
+    } else { //клик на последнем слайде
+        idSlide = 1;
+        slideCollection[slideCollection.length - 1].classList.toggle('hide'); //скрываем текущий слайд
+        slideCollection[idSlide - 1].classList.toggle('hide'); //отображаем 0 слайд из колекции
+        addPref0();
+    }
+}
+
 
 // fetch('db.json')
 // .then(response=>{
