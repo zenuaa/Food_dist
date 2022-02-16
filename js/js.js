@@ -315,7 +315,7 @@ slidesWrapper.style.overflow = 'hidden';
 
 setTimeout(()=>{// назначаю значение с задержкой так как был баг, без выдержки иногда прилетало непонятное 1062.77px хз откудава
 width = window.getComputedStyle(slidesWrapper).width;
-}, 1);
+}, 1000);
 
 slideList.forEach(slide => {
     slide.style.width = width;
