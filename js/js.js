@@ -1,5 +1,4 @@
 'use strict';
-//window.addEventListener('DOMContentLoaded', () => {
 console.time('time');
 
 const tabs = document.querySelectorAll('.tabheader__item'), //меню на день
@@ -115,13 +114,13 @@ class MenuCard { // создаем класс с карточками
     }
 }
 
-const getResourse = async (url) => {
-    const response = await fetch(url);
-    if (!response.ok) {
-        throw new Error(`Could not fetch() ${url}, because response.status: ${response.status}`);
-    }
-    return await response.json();
-};
+// const getResourse = async (url) => {
+//     const response = await fetch(url);
+//     if (!response.ok) {
+//         throw new Error(`Could not fetch() ${url}, because response.status: ${response.status}`);
+//     }
+//     return await response.json();
+// };
 
 // getResourse('http://localhost:3000/menu')
 // .then(data=> {
@@ -296,96 +295,59 @@ function showThanksModal(massage) {
 }
 
 // делаем слайдер из картинок
+console.warn(window.getComputedStyle(document.querySelector('.offer__slider-wrapper')).width);
+const slideList = document.querySelectorAll('.offer__slide'), //NodeList всех слайдов
+    chageSlideButton = document.querySelectorAll('.offer__slider-prev , .offer__slider-next'), // кнопки вперед и назад
+    curentTotal = document.querySelector('#total'), // отображение общего кол-ва слайдов
+    slidesWrapper = document.querySelector('.offer__slider-wrapper'),
+    slidesField = document.querySelector('.offer__slider-inner');
+let width = window.getComputedStyle(slidesWrapper).width; 
 
-const slideCollection = document.querySelectorAll('.offer__slide'); //html коллекция всех слайдов
-const chageSlideButton = document.querySelectorAll('.offer__slider-prev , .offer__slider-next'); // кнопки вперед и назад
 let posId = document.querySelector('#current'); // отображение текущего номера слайда
-const curentTotal = document.querySelector('#total');// отображение общего кол-ва слайдов
-let idSlide = 0; //отображаемый счетчик текущего слайда совпадающий с индексом из html коллекции всех слайдов
 
-curentTotal.textContent = slideCollection.length;
+let idSlide = 0; //отображаемый счетчик текущего слайда совпадающий с индексом из NodeList всех слайдов
+let slideOffset = 0;
+
+slidesField.style.display = 'flex';
+slidesField.style.width = ` ${100 * slideList.length}%`;
+slidesField.style.transition = '0.5s all';
+slidesWrapper.style.overflow = 'hidden';
+
+// setTimeout(()=>{// назначаю значение с задержкой так как был баг, без выдержки иногда прилетало непонятное 1062.77px хз откудава
+// width = window.getComputedStyle(slidesWrapper).width;
+// }, 1);
+
+slideList.forEach(slide => {
+    slide.style.width = width;
+    slide.classList.remove('hide');
+
+});
+
+chageSlideButton[1].addEventListener('click', () => {
+    if (slideOffset >= +width.slice(0, width.length - 2) * (slideList.length - 1)) {
+                            // 650             *                11   =   7150
+        slideOffset = 0;
+        console.log('edge');
+    } else {
+        slideOffset += +width.slice(0, width.length - 2);
+    }
+    console.log(slideOffset);
+    slidesField.style.transform = `translateX(-${slideOffset}px)`;
+});
 
 chageSlideButton[0].addEventListener('click', () => {
-    showSlidePrev();
-});
-chageSlideButton[1].addEventListener('click', () => {
-    showSlideNext();
-});
-
-function addPref0() { // добавление или недобавление 0 перед отображаемой позицией
-    if (idSlide < 9) {
-        posId.textContent = `0${idSlide + 1}`;
-    } else {
-        posId.textContent = idSlide +1;
-    }
-}
-
-function hideCurrentSlide() { // функция по скрытию текущего слайда
-    slideCollection[idSlide].classList.toggle('hide');
-}
-
-
-function showSlidePrev() { // описание работы кнопки назад
-
-    if (idSlide === 0) { //если находимся на 1м слайде
-        hideCurrentSlide(); //скрываем текущий слайд
-        slideCollection[slideCollection.length - 1].classList.toggle('hide'); // отображаем послейдний слайд из колекции
-        idSlide = slideCollection.length -1; //меняем позтцию на индекс посл слайда
-        addPref0();
+    if (slideOffset <= 0) {
+        slideOffset = +width.slice(0, width.length - 2) * (slideList.length - 1);
+        console.log('edge');
 
     } else {
-        hideCurrentSlide(); //скрываем текущий слайд
-        idSlide--; // уменьшаем позицию слайда
-        slideCollection[idSlide].classList.toggle('hide'); //оттображаем предыдущий слайд по уменьшеной позиции
-        addPref0();
+        slideOffset = slideOffset - width.slice(0, width.length - 2);
     }
-}
+    console.log(slideOffset);
+    slidesField.style.transform = `translateX(-${slideOffset}px)`;
+});
 
+//_______________________________________________________________
 
-function showSlideNext() { // описание работы кнопки вперед
-    if (idSlide < slideCollection.length - 1) { //пока слайды не дошли до конца
-        hideCurrentSlide(); //скрываем текущий слайд
-        slideCollection[idSlide +1 ].classList.toggle('hide'); //отображаем следующий из колекции
-        idSlide++;
-        addPref0();
-    } else { //клик на последнем слайде
-        idSlide = 0;
-        slideCollection[slideCollection.length - 1].classList.toggle('hide'); //скрываем текущий слайд
-        slideCollection[idSlide].classList.toggle('hide'); //отображаем 0 слайд из колекции
-        addPref0();
-    }
-}
-
-
-// fetch('db.json')
-// .then(response=>{
-//     console.log(response);
-
-//         return (response.json());
-// })
-// .then(x=> {
-//     console.log(x);
-
-
-// });
-
-// async function isServiceReady(url) {
-//     let response = await fetch(url);
-//     let body = await response.json();
-//     return body;
-// }
-// async function arrBodys() {
-//     let arr;
-//     arr = await Promise.all([
-//         isServiceReady('db.json').then(body => db.push(body) ),
-//         isServiceReady('my_db.json').then(body => db.push(body))
-//     ]);
-//     return arr;
-// }
-// let db= [];
-// arrBodys();
-// console.warn(db);
 
 console.timeEnd('time');
-// end DOMContentLoaded
-//});
