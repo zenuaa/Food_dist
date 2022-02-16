@@ -205,7 +205,7 @@ window.addEventListener('scroll', showModal);
 const openModalonTime = setTimeout(() => { //запуск модалки по истечению 10 сек на стр
     openModalFrame();
     removeShowModalEvent();
-}, 50000);
+}, 5000000);
 
 function showModal() {
     if ($(window).scrollTop() + $(window).height() + 0.1 >= $(document).height()) {
@@ -298,18 +298,26 @@ function showThanksModal(massage) {
 }
 
 // делаем слайдер из картинок
-console.warn(window.getComputedStyle(document.querySelector('.offer__slider-wrapper')).width);
+
 const slideList = document.querySelectorAll('.offer__slide'), //NodeList всех слайдов
     chageSlideButton = document.querySelectorAll('.offer__slider-prev , .offer__slider-next'), // кнопки вперед и назад
-    curentTotal = document.querySelector('#total'), // отображение общего кол-ва слайдов
     slidesWrapper = document.querySelector('.offer__slider-wrapper'),
-    slidesField = document.querySelector('.offer__slider-inner');
-let width = window.getComputedStyle(slidesWrapper).width; 
+    slidesField = document.querySelector('.offer__slider-inner'),
+    width = window.getComputedStyle(slidesWrapper).width;
 
-let posId = document.querySelector('#current'); // отображение текущего номера слайда
-
-let idSlide = 0; //отображаемый счетчик текущего слайда совпадающий с индексом из NodeList всех слайдов
+let postId = document.querySelector('#current'); // отображение текущего номера слайда
+let idSlide = 1; //отображаемый счетчик текущего слайда 
 let slideOffset = 0;
+
+document.querySelector('#total').textContent = slidesField.children.length; // отображение общего кол-ва слайдов
+
+function showIdSlides() { // отображение текущего номера слайда
+    if (idSlide < 10) {
+        postId.textContent = `0${idSlide}`;
+    } else {
+        postId.textContent = idSlide;
+    }
+}
 
 slidesField.style.display = 'flex';
 slidesField.style.width = ` ${100 * slideList.length}%`;
@@ -324,25 +332,25 @@ slideList.forEach(slide => {
 
 chageSlideButton[1].addEventListener('click', () => {
     if (slideOffset >= +width.slice(0, width.length - 2) * (slideList.length - 1)) {
-                            // 650             *                11   =   7150
+        idSlide = 1;
         slideOffset = 0;
-        console.log('edge');
     } else {
         slideOffset += +width.slice(0, width.length - 2);
+        idSlide++;
     }
-    console.log(slideOffset);
+    showIdSlides();
     slidesField.style.transform = `translateX(-${slideOffset}px)`;
 });
 
 chageSlideButton[0].addEventListener('click', () => {
     if (slideOffset <= 0) {
+        idSlide = slidesField.children.length;
         slideOffset = +width.slice(0, width.length - 2) * (slideList.length - 1);
-        console.log('edge');
-
     } else {
         slideOffset = slideOffset - width.slice(0, width.length - 2);
+        idSlide--;
     }
-    console.log(slideOffset);
+    showIdSlides();
     slidesField.style.transform = `translateX(-${slideOffset}px)`;
 });
 
