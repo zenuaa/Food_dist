@@ -301,7 +301,7 @@ const slideList = document.querySelectorAll('.offer__slide'), //NodeList все�
     curentTotal = document.querySelector('#total'), // отображение общего кол-ва слайдов
     slidesWrapper = document.querySelector('.offer__slider-wrapper'),
     slidesField = document.querySelector('.offer__slider-inner');
-let width = window.getComputedStyle(slidesWrapper).width; 
+let width; 
 
 let posId = document.querySelector('#current'); // отображение текущего номера слайда
 
@@ -313,9 +313,9 @@ slidesField.style.width = ` ${100 * slideList.length}%`;
 slidesField.style.transition = '0.5s all';
 slidesWrapper.style.overflow = 'hidden';
 
-// setTimeout(()=>{// назначаю значение с задержкой так как был баг, без выдержки иногда прилетало непонятное 1062.77px хз откудава
-// width = window.getComputedStyle(slidesWrapper).width;
-// }, 1);
+setTimeout(()=>{// назначаю значение с задержкой так как был баг, без выдержки иногда прилетало непонятное 1062.77px хз откудава
+width = window.getComputedStyle(slidesWrapper).width;
+}, 1);
 
 slideList.forEach(slide => {
     slide.style.width = width;
