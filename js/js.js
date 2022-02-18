@@ -300,14 +300,15 @@ function showThanksModal(massage) {
 // делаем слайдер из картинок
 
 const slideList = document.querySelectorAll('.offer__slide'), //NodeList всех слайдов
+    slider = document.querySelector('.offer__slider'),
     chageSlideButton = document.querySelectorAll('.offer__slider-prev , .offer__slider-next'), // кнопки вперед и назад
     slidesWrapper = document.querySelector('.offer__slider-wrapper'),
     slidesField = document.querySelector('.offer__slider-inner'),
-    width = window.getComputedStyle(slidesWrapper).width;
+    width = window.getComputedStyle(slidesWrapper).width;// измеряем ширину блока обертки для flex container
 
 let postId = document.querySelector('#current'); // отображение текущего номера слайда
-let idSlide = 1; //отображаемый счетчик текущего слайда 
-let slideOffset = 0;
+let idSlide = 1; //счетчик текущего слайда 
+let slideOffset = 0;// растояние для сдвига flex container
 
 document.querySelector('#total').textContent = slidesField.children.length; // отображение общего кол-ва слайдов
 
@@ -320,39 +321,66 @@ function showIdSlides() { // отображение текущего номер�
 }
 
 slidesField.style.display = 'flex';
-slidesField.style.width = ` ${100 * slideList.length}%`;
-slidesField.style.transition = '0.5s all';
-slidesWrapper.style.overflow = 'hidden';
+slidesField.style.width = ` ${100 * slideList.length}%`;// устанавливаем ширину flex row со всеми картинками в процентах
+slidesField.style.transition = '0.5s all';// скорость анимации 
+slidesWrapper.style.overflow = 'hidden';// обрезаем лишнее что не влазит в кадр слайда
 
-slideList.forEach(slide => {
-    slide.style.width = width;
-    slide.classList.remove('hide');
+slider.style.position = 'relative';// задаем relative родителю относительно которого будет absolute позиционироваться элемент
+const indicators = document.createElement('ol');// создали упорядоченный список
+indicators.classList.add('carousel-indicators');// задали класс
+slider.append(indicators);//вставили созданый список
 
+const arrDots = [];
+slideList.forEach((slide, index) => {//перебираем NodeList всех слайдов
+    slide.style.width = width;// задаем width каждому слайду равную блоку .offer__slider-wrapper
+    slide.classList.remove('hide');// отображаем слайд
+
+    const dot = document.createElement('li');// создаем рыску
+    dot.classList.add('dot');//задаем класс
+    dot.setAttribute('name', `${index}`);// задаем каждой рыске атрибут name = indeх_у слайда из NodeList всех слайдов
+    document.querySelector('.carousel-indicators').append(dot);// вставляем точки с кол-вом равным слайдам
+    if (index + 1 === idSlide) {// первая рыска становится "активной"
+        dot.style.opacity = 1;
+    }
+    arrDots.push(dot);
 });
 
-chageSlideButton[1].addEventListener('click', () => {
-    if (slideOffset >= +width.slice(0, width.length - 2) * (slideList.length - 1)) {
-        idSlide = 1;
-        slideOffset = 0;
-    } else {
-        slideOffset += +width.slice(0, width.length - 2);
+
+chageSlideButton[1].addEventListener('click', () => {//обработчик на кнопку в права
+    if (slideOffset >= +width.slice(0, width.length - 2) * (slideList.length - 1)) {//если дошли до края
+        idSlide = 1;//сбрасываем счетчик текущего слайда
+        slideOffset = 0;//сбрасываем
+    } else {//если не край
+        slideOffset += +width.slice(0, width.length - 2);//увеличиваем растояние для сдвига flex container на величину width
         idSlide++;
     }
-    showIdSlides();
+    dotAction();// активация нужной рыски
+    showIdSlides();// отображение текущего номера слайда
+    slidesField.style.transform = `translateX(-${slideOffset}px)`;
+
+});
+
+chageSlideButton[0].addEventListener('click', () => {//обработчик на кнопку в лево
+    if (slideOffset <= 0) {//если дошли до края
+        idSlide = slidesField.children.length;//сбрасываем счетчик текущего слайда на конец(12)
+        slideOffset = +width.slice(0, width.length - 2) * (slideList.length - 1);
+    } else {//если не край
+        slideOffset = slideOffset - width.slice(0, width.length - 2);//уменьшаем растояние для сдвига flex container на величину width
+        idSlide--;
+    }
+    dotAction();// активация нужной рыски
+    showIdSlides();// отображение текущего номера слайда
     slidesField.style.transform = `translateX(-${slideOffset}px)`;
 });
 
-chageSlideButton[0].addEventListener('click', () => {
-    if (slideOffset <= 0) {
-        idSlide = slidesField.children.length;
-        slideOffset = +width.slice(0, width.length - 2) * (slideList.length - 1);
-    } else {
-        slideOffset = slideOffset - width.slice(0, width.length - 2);
-        idSlide--;
-    }
-    showIdSlides();
-    slidesField.style.transform = `translateX(-${slideOffset}px)`;
-});
+const dot = document.querySelectorAll('.dot');//выбор рыски
+
+function dotAction() {//активация нужной рыски
+    const activeDot = document.querySelector('li[style = "opacity: 1;"]');
+    activeDot.style.opacity = 0.5;
+    dot[idSlide - 1].style.opacity = 1;
+
+}
 
 //_______________________________________________________________
 
