@@ -356,7 +356,7 @@ chageSlideButton[1].addEventListener('click', () => {//обработчик на
     }
     dotAction();// активация нужной рыски
     showIdSlides();// отображение текущего номера слайда
-    slidesField.style.transform = `translateX(-${slideOffset}px)`;
+    slidesField.style.transform = `translateX(-${slideOffset}px)`;// сдвигаем сontainer по оси X
 
 });
 
@@ -370,16 +370,26 @@ chageSlideButton[0].addEventListener('click', () => {//обработчик на
     }
     dotAction();// активация нужной рыски
     showIdSlides();// отображение текущего номера слайда
-    slidesField.style.transform = `translateX(-${slideOffset}px)`;
+    slidesField.style.transform = `translateX(-${slideOffset}px)`;// сдвигаем сontainer по оси X
 });
 
 const dot = document.querySelectorAll('.dot');//выбор рыски
 
+dot.forEach(item=>{// 
+    item.addEventListener('click', (e)=>{//обработчик для каждой рыски
+        const slideTo = e.target.getAttribute('name');// получаем атрибут на элементе получивший клик (он равен индексу элемента в NodeList всех слайдов)
+        idSlide = +slideTo+1;//переводим счетчик текущего слайда на индекс элемента из листа  
+        slideOffset = width.slice(0, width.length - 2) * (slideTo);//устанавливаем растояние для сдвига flex container на величину width
+        slidesField.style.transform = `translateX(-${slideOffset}px)`;// сдвигаем сontainer по оси X
+        dotAction();
+        showIdSlides();
+    });
+});
+
 function dotAction() {//активация нужной рыски
     const activeDot = document.querySelector('li[style = "opacity: 1;"]');
     activeDot.style.opacity = 0.5;
-    dot[idSlide - 1].style.opacity = 1;
-
+    dot[idSlide - 1].style.opacity = 1;    
 }
 
 //_______________________________________________________________
