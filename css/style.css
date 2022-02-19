@@ -744,3 +744,32 @@ a {
     opacity: 0.5;
     transition: opacity .6s ease;
 }
+
+/* стили окошка Consent*/
+.askCookie{
+display: flex;
+position: fixed;
+bottom: -100%;
+width: 100%;
+height: 80px;
+justify-content: center;
+background-color: rgb(236, 182, 32);
+flex-direction: row;
+align-items: center;
+}
+
+.container_ask{
+font-size: 25px;
+}
+
+.cookieBut{    
+font-size: 17px;
+background-color: rgb(236, 182, 32);   
+border: solid 2px black;
+width: 100px;
+height: 50px;
+}
+
+.cookieBut:hover{
+    background-color: #b99a33;
+};
