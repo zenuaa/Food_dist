@@ -749,6 +749,7 @@ a {
 .askCookie{
 display: flex;
 position: fixed;
+z-index: 100;
 bottom: -100%;
 width: 100%;
 height: 80px;
@@ -772,4 +773,5 @@ height: 50px;
 
 .cookieBut:hover{
     background-color: #b99a33;
+    border-radius: 5px;
 };
